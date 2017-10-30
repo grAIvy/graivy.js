@@ -77,7 +77,8 @@ App = {
           tasksLocation,
           numTasks,
           rewardTotal,
-          results
+          results,
+          {from: account, value: web3.toWei(rewardTotal, 'ether')}
         );
       }).then(function(result) {
         alert('Project Created!');
