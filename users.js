@@ -30,7 +30,7 @@ App = {
       App.contracts.GraivyApp.setProvider(App.web3Provider);
 
       // Use our contract to retieve and mark the adopted pets.
-      return App.getUserCount(), App.checkUser();
+      return App.getUserCount(), App.authenticateUser();
     });
 
     return App.bindEvents();
@@ -232,35 +232,6 @@ App = {
     });
   },
 
-  handleCheckUser: function() {
-    event.preventDefault();
-
-    var userAddress = $('#UpdatePermissionsAddress').val();
-
-    console.log('Checking User Status for ' + userAddress);
-
-    var graivyAppInstance;
-
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-
-      var account = accounts[0];
-
-      App.contracts.GraivyApp.deployed().then(function(instance) {
-        graivyAppInstance = instance;
-
-        return graivyAppInstance.authenticateUser(userAddress);
-      }).then(function(result) {
-        alert(userAddress + ' is a registered User!');
-        return App.getUserCount();
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
-  },
-
   getUserCount: function(adopters) {
     console.log('Getting user count...');
 
@@ -287,7 +258,7 @@ App = {
     });
   },
 
-  checkUser: function(adopters, account) {
+  authenticateUser: function(adopters, account) {
     console.log('Checking if user...');
 
     var graivyAppInstance;
@@ -302,7 +273,7 @@ App = {
       App.contracts.GraivyApp.deployed().then(function(instance) {
         graivyAppInstance = instance;
 
-        return graivyAppInstance.isUser(account);
+        return graivyAppInstance.authenticateUser(account);
       }).then(function(result) {
         if (result == true) {
           $('#GVYUserCheck').text('Welcome back, you are logged in.');

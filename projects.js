@@ -30,7 +30,7 @@ App = {
       App.contracts.GraivyApp.setProvider(App.web3Provider);
 
       // Use our contract to retieve and mark the adopted pets.
-      return App.getProjectCount();
+      return App.getProjectCount(), App.getUserRewards();
     });
 
     return App.bindEvents();
@@ -56,6 +56,7 @@ App = {
     var numTasks = parseInt($('#ProjectNumTasks').val());
     var rewardTotal = parseFloat($('#ProjectRewardTotal').val());
     var results = $('#ProjectResults').val();
+    var weiReward = web3.toWei(rewardTotal, 'ether');
 
     console.log('Creating Project...');
 
@@ -78,9 +79,9 @@ App = {
           redundancy,
           tasksLocation,
           numTasks,
-          rewardTotal,
+          weiReward,
           results,
-          {from: account, value: web3.toWei(rewardTotal, 'ether')}
+          {from: account, value: weiReward}
         );
       }).then(function(result) {
         alert('Project Created!');
@@ -204,6 +205,33 @@ App = {
     });
   },
 
+  getUserRewards: function(adopters) {
+    console.log('Getting available user rewards...');
+
+    var graivyAppInstance;
+
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.GraivyApp.deployed().then(function(instance) {
+        graivyAppInstance = instance;
+
+        return graivyAppInstance.getUserRewards(account);
+      }).then(function(result) {
+        rewards = result.c[0];
+        fixedRewards = web3.fromWei(rewards, 'ether');
+
+        $('#UserRewardsAvailable').text(fixedRewards);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
   handleUserWithdrawReward: function() {
     event.preventDefault();
 
@@ -239,7 +267,8 @@ App = {
     var projectAddress = $('#ClaimProjectAddress').val();
     var userAddress = $('#ClaimUserAddress').val();
     var numWorks = $('#ClaimNumWorks').val();
-    var reward = $('#ClaimReward').val();
+    var reward = parseFloat($('#ClaimReward').val());
+    var weiAmount = web3.toWei(reward, 'ether');
 
     console.log('Claiming rewards...');
 
@@ -259,7 +288,7 @@ App = {
           projectAddress,
           userAddress,
           numWorks,
-          reward
+          weiAmount,
         );
       }).then(function(result) {
         alert('Rewards claimed!');
