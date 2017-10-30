@@ -251,7 +251,7 @@ App = {
       App.contracts.GraivyApp.deployed().then(function(instance) {
         graivyAppInstance = instance;
 
-        return graivyAppInstance.isUser(userAddress);
+        return graivyAppInstance.authenticateUser(userAddress);
       }).then(function(result) {
         alert(userAddress + ' is a registered User!');
         return App.getUserCount();
