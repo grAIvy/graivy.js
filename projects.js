@@ -41,6 +41,8 @@ App = {
     $(document).on('click', '#insertProject', App.handleInsertProject);
     $(document).on('click', '#deleteProject', App.handleDeleteProject);
     $(document).on('click', '#getNumTasks', App.handleGetProjectNumTasks);
+    $(document).on('click', '#userClaimReward', App.handleUserClaimReward);
+    $(document).on('click', '#userWithdrawReward', App.handleUserWithdrawReward);
   },
 
   handleInsertProject: function() {
@@ -196,6 +198,72 @@ App = {
         count = result.c[0];
 
         $('#GVYProjectCount').text(count);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
+  handleUserWithdrawReward: function() {
+    event.preventDefault();
+
+    console.log('Withdrawing rewards...');
+
+    var graivyAppInstance;
+
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.GraivyApp.deployed().then(function(instance) {
+        graivyAppInstance = instance;
+
+        return graivyAppInstance.withdrawRewards(
+          {from: account}
+        );
+      }).then(function(result) {
+        alert('Rewards withdrawn!');
+        return App.getProjectCount();
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
+  handleUserClaimReward: function() {
+    event.preventDefault();
+
+    var projectAddress = $('#ClaimProjectAddress').val();
+    var userAddress = $('#ClaimUserAddress').val();
+    var numWorks = $('#ClaimNumWorks').val();
+    var reward = $('#ClaimReward').val();
+
+    console.log('Claiming rewards...');
+
+    var graivyAppInstance;
+
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+
+      var account = accounts[0];
+
+      App.contracts.GraivyApp.deployed().then(function(instance) {
+        graivyAppInstance = instance;
+
+        return graivyAppInstance.quickReward(
+          projectAddress,
+          userAddress,
+          numWorks,
+          reward
+        );
+      }).then(function(result) {
+        alert('Rewards claimed!');
+        return App.getProjectCount();
       }).catch(function(err) {
         console.log(err.message);
       });
