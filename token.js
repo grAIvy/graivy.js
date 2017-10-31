@@ -3,6 +3,14 @@ App = {
   contracts: {},
 
   init: function() {
+    try {
+      console.log(web3.currentProvider);
+      if (!web3.isConnected()) $('#ConnectionStatus').text('Disconnected');
+      if (web3.isConnected()) $('#ConnectionStatus').text('Online');
+    } catch(err) {
+      $('#ConnectionStatus').text('Install MetaMask');
+    }
+
     return App.initWeb3();
   },
 
@@ -29,7 +37,7 @@ App = {
       // Set the provider for our contract.
       App.contracts.GraivyToken.setProvider(App.web3Provider);
 
-      // Use our contract to retieve and mark the adopted pets.
+      // Get information about token balance/lock/release for current user
       return App.getBalances(), App.checkLock(), App.releaseTime(), App.getTimestamp();
     });
 
@@ -193,8 +201,6 @@ App = {
   },
 
   checkLock: function(adopters, account) {
-    event.preventDefault();
-
     console.log('Checking for locked GVY...');
 
     var graivyTokenInstance;
@@ -222,8 +228,6 @@ App = {
   },
 
   releaseTime: function(adopters, account) {
-    event.preventDefault();
-
     console.log('Checking for locked GVY release time...');
 
     var graivyTokenInstance;
@@ -251,7 +255,6 @@ App = {
   },
 
   getTimestamp: function(adopters) {
-    event.preventDefault();
 
     var current = web3.eth.defaultBlock;
     web3.eth.getBlock(current, function(error, result){
