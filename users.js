@@ -29,7 +29,7 @@ App = {
       // Set the provider for our contract.
       App.contracts.GraivyApp.setProvider(App.web3Provider);
 
-      // Use our contract to retieve and mark the adopted pets.
+      // Count users and try to authenticate in background
       return App.getUserCount(), App.authenticateUser();
     });
 
